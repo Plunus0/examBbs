@@ -16,26 +16,27 @@ public class BoardService {
         this.boardRepository = boardRepository;
     }
 
+    //전체
+
+    public List<Board> getAllBoards() {
+        return boardRepository.findAll();
+    }
+    /*상세*/
+
+    public Board getBoardById(Long boardId) {
+        return boardRepository.findById(boardId).orElse(null);
+    }
     //삽입
     public Board saveBoard(Board board) {
         return boardRepository.save(board);
     }
 
-    //전체
-    public List<Board> getAllBoard() {
-        return boardRepository.findAll();
-    }
-
-    /*상세*/
-    public Board getBoardById(Long boardId) {
-        return boardRepository.findById(boardId).orElse(null);
-    }
-
     /*수정*/
-    public Board updateBoardTitle(Long boardId, String newTitle) {
+    public Board updateBoard(Long boardId, Board updatedBoard) {
         Board board = boardRepository.findById(boardId).orElse(null);
         if (board != null) {
-            board.setTitle(newTitle);
+            board.setTitle(updatedBoard.getTitle());
+            board.setTitle(updatedBoard.getContent());
             return boardRepository.save(board);
         }
         return null;

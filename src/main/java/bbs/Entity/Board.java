@@ -14,7 +14,6 @@ public class Board {
     private String author;
     private Date regDate;
     private Date updateDate;
-    private Date deleteDate;
 
     public String getBoardId() {
         return boardId;
@@ -64,11 +63,4 @@ public class Board {
         this.updateDate = updateDate;
     }
 
-    public Date getDeleteDate() {
-        return deleteDate;
-    }
-
-    public void setDeleteDate(Date deleteDate) {
-        this.deleteDate = deleteDate;
-    }
 }
