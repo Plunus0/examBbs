@@ -4,7 +4,9 @@ import com.exam.examBbs.Entity.Board;
 import com.exam.examBbs.Repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,7 +20,13 @@ public class BoardService {
 
     //전체
 /*    public List<Board> getAllBoards() { return boardRepository.findAll(); }*/
+/*    public Page<Board> getPaginatedBoard(Pageable pageable) {
+        return boardRepository.findAll(pageable);
+    }*/
+
     public Page<Board> getPaginatedBoard(Pageable pageable) {
+        Sort sort = Sort.by(Sort.Order.desc("BoardId"));
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
         return boardRepository.findAll(pageable);
     }
 
