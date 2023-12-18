@@ -1,4 +1,4 @@
-package bbs.Entity;
+package com.exam.examBbs.Entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

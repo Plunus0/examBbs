@@ -1,11 +1,11 @@
-package bbs.Service;
+package com.exam.examBbs.Service;
 
-import bbs.Entity.Board;
-import bbs.Repository.BoardRepository;
+import com.exam.examBbs.Entity.Board;
+import com.exam.examBbs.Repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class BoardService {
@@ -17,22 +17,23 @@ public class BoardService {
     }
 
     //전체
-
-    public List<Board> getAllBoards() {
-        return boardRepository.findAll();
+/*    public List<Board> getAllBoards() { return boardRepository.findAll(); }*/
+    public Page<Board> getPaginatedBoard(Pageable pageable) {
+        return boardRepository.findAll(pageable);
     }
-    /*상세*/
 
-    public Board getBoardById(Long boardId) {
+    /*상세*/
+    public Board getBoardById(String boardId) {
         return boardRepository.findById(boardId).orElse(null);
     }
+
     //삽입
     public Board saveBoard(Board board) {
         return boardRepository.save(board);
     }
 
     /*수정*/
-    public Board updateBoard(Long boardId, Board updatedBoard) {
+    public Board updateBoard(String boardId, Board updatedBoard) {
         Board board = boardRepository.findById(boardId).orElse(null);
         if (board != null) {
             board.setTitle(updatedBoard.getTitle());
@@ -43,7 +44,7 @@ public class BoardService {
     }
 
     /*삭제*/
-    public void deleteBoard(Long boardId) {
+    public void deleteBoard(String boardId) {
         boardRepository.deleteById(boardId);
     }
 }
