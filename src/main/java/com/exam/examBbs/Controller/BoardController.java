@@ -1,8 +1,8 @@
 package com.exam.examBbs.Controller;
 
-import com.exam.examBbs.Entity.Board;
 import com.exam.examBbs.Service.BoardService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.exam.examBbs.domain.Board;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,14 +12,10 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/bbs/board")
+@RequiredArgsConstructor
+@RequestMapping("/bbs")
 public class BoardController {
     private final BoardService boardService;
-
-    @Autowired
-    public BoardController(BoardService boardService) {
-        this.boardService = boardService;
-    }
 
     @PostMapping
     public ResponseEntity<Board> saveBoard(@RequestBody Board board) {
