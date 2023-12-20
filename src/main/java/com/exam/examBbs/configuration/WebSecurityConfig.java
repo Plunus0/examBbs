@@ -14,12 +14,12 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
         return httpSecurity
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
+                .httpBasic().disable()
+                .csrf().disable()
+                .cors().and()
                 .authorizeHttpRequests(requests -> {
-                    requests.requestMatchers("/api/users/login", "/api/users/join").permitAll();
-                    requests.requestMatchers(HttpMethod.POST, "/api/articles").authenticated();
+                    requests.requestMatchers("/bbs", "/members/join").permitAll();
+                    requests.requestMatchers(HttpMethod.POST, "/articles").authenticated();
                 })
                 .sessionManagement(
                         sessionManagement ->
