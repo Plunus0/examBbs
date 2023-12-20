@@ -39,7 +39,14 @@ public class MemberService {
 
     public String login(String email, String password){
         //인증과정
-
+        //이메일 확인
+        Member selectedMember = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND, email + "이 없습니다."));
+        //비밀번호 확인
+        if(!encoder.matches(selectedMember.getPassword(), password)){
+            throw new AppException(ErrorCode.INVALID_PASSWORD, "비밀번호가 틀렸습니다.");
+        }
+        //인증성공시
         return JwtUtil.createJwt(email, secretKey, expiredMs);
     }
 }

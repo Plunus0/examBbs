@@ -1,6 +1,7 @@
 package com.exam.examBbs.controller;
 
 import com.exam.examBbs.domain.dto.MemberJoinRequest;
+import com.exam.examBbs.domain.dto.MemberLoginRequest;
 import com.exam.examBbs.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +26,8 @@ public class MemberController {
         }
 
     @PostMapping("/login")
-        public ResponseEntity<String> login() {
-            return ResponseEntity.ok().body(memberService.login("",""));
+        public ResponseEntity<String> login(@RequestBody MemberLoginRequest dto) {
+            return ResponseEntity.ok().body(memberService.login(dto.getEmail(), dto.getPassword()));
         }
 
 }
