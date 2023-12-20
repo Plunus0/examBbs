@@ -5,13 +5,15 @@ import com.exam.examBbs.domain.Member;
 import com.exam.examBbs.exception.AppException;
 import com.exam.examBbs.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
-    public final MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
+    private final BCryptPasswordEncoder encoder;
     public void join(String name, String password, String email){
 
         //email 중복 체크
@@ -22,7 +24,7 @@ public class MemberService {
         //저장
         Member member = Member.builder()
                         .name(name)
-                        .password(password)
+                        .password(encoder.encode(password))
                         .email(email)
                         .build();
         memberRepository.save(member);
