@@ -1,4 +1,4 @@
-package com.exam.examBbs.domain.dto;
+package com.exam.examBbs.Domain.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

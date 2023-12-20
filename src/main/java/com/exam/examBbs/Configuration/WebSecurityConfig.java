@@ -1,4 +1,4 @@
-package com.exam.examBbs.configuration;
+package com.exam.examBbs.Configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,8 +18,8 @@ public class WebSecurityConfig {
                 .csrf().disable()
                 .cors().and()
                 .authorizeHttpRequests(requests -> {
-                    requests.requestMatchers("/bbs", "/members/join").permitAll();
-                    requests.requestMatchers(HttpMethod.POST, "/articles").authenticated();
+                    requests.requestMatchers("/bbs", "/members", "/members/*").permitAll();
+                    requests.requestMatchers(HttpMethod.POST, "/**").authenticated();
                 })
                 .sessionManagement(
                         sessionManagement ->

@@ -1,4 +1,4 @@
-package com.exam.examBbs.exception;
+package com.exam.examBbs.Exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

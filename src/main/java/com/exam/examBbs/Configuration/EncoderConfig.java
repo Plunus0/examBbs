@@ -1,4 +1,4 @@
-package com.exam.examBbs.configuration;
+package com.exam.examBbs.Configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

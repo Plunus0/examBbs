@@ -1,9 +1,9 @@
 package com.exam.examBbs.Service;
 
+import com.exam.examBbs.Domain.Member;
+import com.exam.examBbs.Exception.AppException;
+import com.exam.examBbs.Exception.ErrorCode;
 import com.exam.examBbs.Repository.MemberRepository;
-import com.exam.examBbs.domain.Member;
-import com.exam.examBbs.exception.AppException;
-import com.exam.examBbs.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
