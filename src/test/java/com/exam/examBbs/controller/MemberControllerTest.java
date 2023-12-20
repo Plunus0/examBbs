@@ -1,7 +1,7 @@
-package com.exam.examBbs.Controller;
+package com.exam.examBbs.controller;
 
-import com.exam.examBbs.Domain.DTO.MemberJoinRequest;
-import com.exam.examBbs.Service.MemberService;
+import com.exam.examBbs.domain.dto.MemberJoinRequest;
+import com.exam.examBbs.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

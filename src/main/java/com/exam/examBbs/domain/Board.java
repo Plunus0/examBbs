@@ -1,4 +1,4 @@
-package com.exam.examBbs.Domain;
+package com.exam.examBbs.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

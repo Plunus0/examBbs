@@ -1,10 +1,12 @@
-package com.exam.examBbs.Service;
+package com.exam.examBbs.service;
 
-import com.exam.examBbs.Domain.Member;
-import com.exam.examBbs.Exception.AppException;
-import com.exam.examBbs.Exception.ErrorCode;
-import com.exam.examBbs.Repository.MemberRepository;
+import com.exam.examBbs.domain.Member;
+import com.exam.examBbs.exception.AppException;
+import com.exam.examBbs.exception.ErrorCode;
+import com.exam.examBbs.repository.MemberRepository;
+import com.exam.examBbs.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,11 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder encoder;
+    @Value("${jwt.secret}")
+    private String secretKey;
+
+    //토큰의 유효시간
+    private Long expiredMs = 1000 * 60 * 60L;
     public void join(String name, String password, String email){
 
         //email 중복 체크
@@ -28,5 +35,11 @@ public class MemberService {
                         .email(email)
                         .build();
         memberRepository.save(member);
+    }
+
+    public String login(String email, String password){
+        //인증과정
+
+        return JwtUtil.createJwt(email, secretKey, expiredMs);
     }
 }

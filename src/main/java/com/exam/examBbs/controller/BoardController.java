@@ -1,7 +1,7 @@
-package com.exam.examBbs.Controller;
+package com.exam.examBbs.controller;
 
-import com.exam.examBbs.Domain.Board;
-import com.exam.examBbs.Service.BoardService;
+import com.exam.examBbs.domain.Board;
+import com.exam.examBbs.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

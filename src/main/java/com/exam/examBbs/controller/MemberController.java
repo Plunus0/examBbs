@@ -1,7 +1,7 @@
-package com.exam.examBbs.Controller;
+package com.exam.examBbs.controller;
 
-import com.exam.examBbs.Domain.DTO.MemberJoinRequest;
-import com.exam.examBbs.Service.MemberService;
+import com.exam.examBbs.domain.dto.MemberJoinRequest;
+import com.exam.examBbs.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +26,7 @@ public class MemberController {
 
     @PostMapping("/login")
         public ResponseEntity<String> login() {
-            return ResponseEntity.ok().body("토큰 발급");
+            return ResponseEntity.ok().body(memberService.login("",""));
         }
 
 }

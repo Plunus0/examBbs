@@ -1,6 +1,6 @@
-package com.exam.examBbs.Repository;
+package com.exam.examBbs.repository;
 
-import com.exam.examBbs.Domain.Member;
+import com.exam.examBbs.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

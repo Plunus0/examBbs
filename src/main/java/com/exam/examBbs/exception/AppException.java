@@ -1,4 +1,4 @@
-package com.exam.examBbs.Exception;
+package com.exam.examBbs.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,7 +1,7 @@
-package com.exam.examBbs.Service;
+package com.exam.examBbs.service;
 
-import com.exam.examBbs.Domain.Board;
-import com.exam.examBbs.Repository.BoardRepository;
+import com.exam.examBbs.domain.Board;
+import com.exam.examBbs.repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
