@@ -20,7 +20,8 @@ public class Board {
     private Long boardId;
     private String title;
     private String content;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
     private Member author;
     @Column(name = "reg_date")
     private LocalDateTime regDate;

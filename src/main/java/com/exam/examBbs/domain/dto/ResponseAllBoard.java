@@ -15,6 +15,6 @@ import java.time.LocalDateTime;
 public class ResponseAllBoard<T> {
     private Long boardId;
     private String title;
-    private Member author;
+    private String authorName;
     private LocalDateTime updateDate;
 }

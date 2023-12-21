@@ -3,6 +3,7 @@ package com.exam.examBbs.controller;
 import com.exam.examBbs.domain.dto.ResponseAllBoard;
 import com.exam.examBbs.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,13 +17,19 @@ import java.util.List;
 public class BoardController {
     private final BoardService boardService;
 
-    //전체 조회(반환타입 변경)
     @GetMapping
-    public List<ResponseAllBoard> getAllBoards(/*@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int pageSize*/) {
+    public ResponseEntity<List<BoardListDTO>> getAllBoards() {
+        List<BoardListDTO> boardList = boardService.getAllBoards();
+        return ResponseEntity.ok().body(boardList);
+    }
+
+    //전체 조회(반환타입 변경)
+/*    @GetMapping
+    public List<ResponseAllBoard> getAllBoards(*//*@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int pageSize*//*) {
 //        Pageable pageable = PageRequest.of(page, pageSize);
         //페이징에 필요한 데이터만 전송
-        return boardService.getPaginatedBoard(/*pageable*/);
-    }
+        return boardService.getPaginatedBoard(*//*pageable*//*);
+    }*/
 //
 //    //게시글 작성
 //    @PostMapping("/write")
