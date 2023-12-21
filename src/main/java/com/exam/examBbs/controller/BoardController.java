@@ -1,56 +1,53 @@
 package com.exam.examBbs.controller;
 
-import com.exam.examBbs.domain.Board;
+import com.exam.examBbs.domain.dto.ResponseAllBoard;
 import com.exam.examBbs.service.BoardService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/bbs")
+@RequestMapping("/api/bbs")
 public class BoardController {
     private final BoardService boardService;
 
-    //전체 조회
+    //전체 조회(반환타입 변경)
     @GetMapping
-    public ResponseEntity<Page<Board>> getAllBoards(@RequestParam(defaultValue = "0") int page) {
-        int pageSize = 5; // 원하는 페이지 크기
-        Pageable pageable = PageRequest.of(page, pageSize);
-        Page<Board> boards = boardService.getPaginatedBoard(pageable);
-        return new ResponseEntity<>(boards, HttpStatus.OK);
+    public List<ResponseAllBoard> getAllBoards(/*@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int pageSize*/) {
+//        Pageable pageable = PageRequest.of(page, pageSize);
+        //페이징에 필요한 데이터만 전송
+        return boardService.getPaginatedBoard(/*pageable*/);
     }
+//
+//    //게시글 작성
+//    @PostMapping("/write")
+//    public ResponseEntity<Board> saveBoard(@RequestBody BoardInsertRequest dto) {
+//        return new ResponseEntity<>(boardService.saveBoard(dto), HttpStatus.CREATED);
+//    }
+//
+//    //상세 조회
+//    @GetMapping("/{id}")
+//    public ResponseEntity<Board> getBoardById(@PathVariable Long id) {
+//        return new ResponseEntity<>(boardService.getBoardById(id), HttpStatus.OK);
+//    }
+//
+//    //업데이트
+//    @PutMapping("/{id}")
+//    public ResponseEntity<Board> updateBoard(@PathVariable Long id, @RequestBody BoardUpdateRequest dto) {
+//        return new ResponseEntity<>(boardService.updateBoard(id, dto), HttpStatus.OK);
+//    }
+//
+//    //삭제
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
+//        boardService.deleteBoard(id);
+//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//    }
 
-    //게시글 작성
-    @PostMapping("/write")
-    public ResponseEntity<Board> saveBoard(@RequestBody Board board) {
-        Board saveBoard = boardService.saveBoard(board);
-        return new ResponseEntity<>(saveBoard, HttpStatus.CREATED);
-    }
-
-    //상세 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<Board> getBoardById(@PathVariable String id) {
-        Board board = boardService.getBoardById(id);
-        return new ResponseEntity<>(board, HttpStatus.OK);
-    }
-
-    //업데이트
-    @PutMapping("/{id}")
-    public ResponseEntity<Board> updateBoard(@PathVariable String id, @RequestBody Board updatedBoard) {
-        Board board = boardService.updateBoard(id, updatedBoard);
-        return new ResponseEntity<>(board, HttpStatus.OK);
-    }
-
-    //삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable String id) {
-        boardService.deleteBoard(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+    //api문서 작성
 }

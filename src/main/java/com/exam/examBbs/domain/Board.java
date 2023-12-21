@@ -1,21 +1,30 @@
 package com.exam.examBbs.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Board {
     @Id
-    private String boardId;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "baord_id")
+    private Long boardId;
     private String title;
     private String content;
-    private String author;
-    private Date regDate;
-    private Date updateDate;
+    @ManyToOne
+    private Member author;
+    @Column(name = "reg_date")
+    private LocalDateTime regDate;
+    @Column(name = "update_date")
+    private LocalDateTime updateDate;
+
 }

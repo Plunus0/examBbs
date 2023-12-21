@@ -1,13 +1,12 @@
 package com.exam.examBbs.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -17,9 +16,12 @@ import lombok.NoArgsConstructor;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "member_id")
     private Long memberId;
     private String name;
     private String password;
     private String email;
+    @Column(name = "reg_date")
+    private LocalDateTime regDate;
 }
 

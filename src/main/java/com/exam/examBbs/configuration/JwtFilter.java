@@ -1,6 +1,7 @@
 package com.exam.examBbs.configuration;
 
 import com.exam.examBbs.service.MemberService;
+import com.exam.examBbs.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +29,7 @@ public class JwtFilter extends OncePerRequestFilter {
         logger.info("authorization = " + authorization);
 
         if(authorization == null || !authorization.startsWith("Bearer ")){
-            logger.error("authorization 이 없습니다.");
+            logger.error("authorization nothing");
             filterChain.doFilter(request, response);
             return;
         }
@@ -37,11 +38,11 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = authorization.split(" ")[1];
 
         // Token Expired 되었는지 여부
-//        if(JwtUtil.isExpired(token, secretKey)){
-//            logger.error("Token 이 만료되었습니다.");
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
+        if(JwtUtil.isExpired(token, secretKey)){
+            logger.error("Token Expired");
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         //Token에서 email 가져오기
         String email = "";

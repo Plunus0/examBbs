@@ -1,58 +1,71 @@
 package com.exam.examBbs.service;
 
 import com.exam.examBbs.domain.Board;
+import com.exam.examBbs.domain.dto.BoardInsertRequest;
+import com.exam.examBbs.domain.dto.BoardUpdateRequest;
+import com.exam.examBbs.domain.dto.ResponseAllBoard;
 import com.exam.examBbs.repository.BoardRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RequiredArgsConstructor
 @Service
 public class BoardService {
     private final BoardRepository boardRepository;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    public BoardService(BoardRepository boardRepository) {
-        this.boardRepository = boardRepository;
-    }
+    public List<ResponseAllBoard> getPaginatedBoard(/*Pageable pageable*/) {
+//        Sort sort = Sort.by(Sort.Order.desc("BoardId"));
+//        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        List<Board> boards = boardRepository.findAll();
 
-    //전체
-/*    public List<Board> getAllBoards() { return boardRepository.findAll(); }*/
-/*    public Page<Board> getPaginatedBoard(Pageable pageable) {
-        return boardRepository.findAll(pageable);
-    }*/
-
-    public Page<Board> getPaginatedBoard(Pageable pageable) {
-        Sort sort = Sort.by(Sort.Order.desc("BoardId"));
-        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-        return boardRepository.findAll(pageable);
+        return boards.stream()
+                .map(member -> modelMapper.map(member, ResponseAllBoard.class))
+                .collect(Collectors.toList());
     }
 
     /*상세*/
-    public Board getBoardById(String boardId) {
+    public Board getBoardById(Long boardId) {
         return boardRepository.findById(boardId).orElse(null);
     }
 
-    //삽입
-    public Board saveBoard(Board board) {
+    //생성
+    public Board saveBoard(BoardInsertRequest dto) {
+        Board board = Board.builder()
+                .title(dto.getTitle())
+                .content(dto.getContent())
+                .build();
+
         return boardRepository.save(board);
     }
 
     /*수정*/
-    public Board updateBoard(String boardId, Board updatedBoard) {
+    public Board updateBoard(Long boardId, BoardUpdateRequest dto) {
+        //인증절차(관리자, 작성자, 임시작성자)
+
+        //자료 확인
+
+        //수정
         Board board = boardRepository.findById(boardId).orElse(null);
         if (board != null) {
-            board.setTitle(updatedBoard.getTitle());
-            board.setTitle(updatedBoard.getContent());
+            Board.builder()
+                    .boardId(boardId)
+                    .title(dto.getTitle())
+                    .content(dto.getContent())
+                    .build();
+
             return boardRepository.save(board);
         }
         return null;
     }
 
     /*삭제*/
-    public void deleteBoard(String boardId) {
+    public void deleteBoard(Long boardId) {
+        //인증절차(관리자, 작성자, 임시작성자)
         boardRepository.deleteById(boardId);
     }
 }

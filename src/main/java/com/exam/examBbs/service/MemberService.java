@@ -43,7 +43,7 @@ public class MemberService {
         Member selectedMember = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND, email + "이 없습니다."));
         //비밀번호 확인
-        if(!encoder.matches(selectedMember.getPassword(), password)){
+        if(!encoder.matches(password, selectedMember.getPassword())){
             throw new AppException(ErrorCode.INVALID_PASSWORD, "비밀번호가 틀렸습니다.");
         }
         //인증성공시
