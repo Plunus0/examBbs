@@ -23,7 +23,8 @@ public class Member {
     private String name;
     private String password;
     private String email;
+    @Builder.Default
     @Column(name = "reg_date")
-    private LocalDateTime regDate;
+    private LocalDateTime regDate = LocalDateTime.now();
 }
 

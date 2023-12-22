@@ -47,6 +47,6 @@ public class MemberService {
             throw new AppException(ErrorCode.INVALID_PASSWORD, "비밀번호가 틀렸습니다.");
         }
         //인증성공시
-        return JwtUtil.createJwt(email, secretKey, expiredMs);
+        return JwtUtil.createJwt(email, selectedMember.getMemberId(), secretKey, expiredMs);
     }
 }

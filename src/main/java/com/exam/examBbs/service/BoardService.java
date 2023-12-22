@@ -2,16 +2,21 @@ package com.exam.examBbs.service;
 
 import com.exam.examBbs.domain.Board;
 import com.exam.examBbs.domain.Member;
-import com.exam.examBbs.domain.dto.BoardInsertRequest;
+import com.exam.examBbs.domain.dto.BoardDetailDTO;
 import com.exam.examBbs.domain.dto.BoardListDTO;
+import com.exam.examBbs.domain.dto.BoardSaveRequest;
 import com.exam.examBbs.domain.dto.BoardUpdateRequest;
 import com.exam.examBbs.exception.AppException;
 import com.exam.examBbs.exception.ErrorCode;
 import com.exam.examBbs.repository.BoardRepository;
 import com.exam.examBbs.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -28,56 +33,25 @@ public class BoardService {
         return BoardListDTO.builder()
                 .boardId(board.getBoardId())
                 .title(board.getTitle())
-                .authorName(board.getAuthor().getName())
+                .author(board.getAuthor().getName())
                 .updateDate(board.getUpdateDate())
                 .build();
 
     }
-//    public Page<BoardListDTO> getBoardList(Pageable pageable,String searchType, String searchText) {
-//        Specification<Board> spec = Specification.where(null);
-//        System.out.println("SERVICE START");
-//        try {
-//            logger.info("Fetching data, Page number: {}, Page size: {}", pageable.getPageNumber(), pageable.getPageSize());
-//            System.out.println("TRY START");
-//            // Specification 조건 추가
-//            // ...
-//            if ("title".equals(searchType)) {
-//                System.out.println("title start");
-//                spec = spec.and(BoardSpecifications.titleContains(searchText));
-//            } else if ("content".equals(searchType)) {
-//                System.out.println("content start");
-//                spec = spec.and(BoardSpecifications.contentContains(searchText));
-//            } else if ("author".equals(searchType)) {
-//                System.out.println("author start");
-//                spec = spec.and(BoardSpecifications.authorNameContains(searchText));
-//            }
-//
-//        } catch (Exception e) {
-//            logger.error("Error occurred while fetching data", e);
-//            System.out.println("end");
-//            throw e; // 또는 적절한 예외 처리
-//        }
-//
-//        logger.info("Specification: {}", spec);
-//
-//        Page<BoardListDTO> result = boardRepository.findAll(spec, pageable).map(this::convertToBoardListDTO);
-//
-//        logger.info("Retrieved data, Number of elements: {}", result.getNumberOfElements());
-//        System.out.println("SERVICE END");
-//        return result;
+    public Page<BoardListDTO> getBoardList(Pageable pageable, String searchType, String searchText) {
 
-//        Specification<Board> spec = Specification.where(null);
-//
-//        if ("title".equals(searchType)) {
-//            spec = spec.and(BoardSpecifications.titleContains(searchText));
-//        } else if ("content".equals(searchType)) {
-//            spec = spec.and(BoardSpecifications.contentContains(searchText));
-//        } else if ("author".equals(searchType)) {
-//            spec = spec.and(BoardSpecifications.authorNameContains(searchText));
-//        }
-//
-//        return boardRepository.findAll(spec, pageable).map(this::convertToBoardListDTO);
-//    }
+        Specification<Board> spec = Specification.where(null);
+
+        if ("title".equals(searchType)) {
+            spec = spec.and(BoardSpecifications.titleContains(searchText));
+        } else if ("content".equals(searchType)) {
+            spec = spec.and(BoardSpecifications.contentContains(searchText));
+        } else if ("author".equals(searchType)) {
+            spec = spec.and(BoardSpecifications.authorNameContains(searchText));
+        }
+
+        return boardRepository.findAll(spec, pageable).map(this::convertToBoardListDTO);
+    }
 
 
 
@@ -96,17 +70,42 @@ public class BoardService {
     }
 
     //생성
-    public Board saveBoard(BoardInsertRequest dto) {
-        Member author = memberRepository.findById(dto.getAuthorId())
-                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "Member not found with id: " + dto.getAuthorId()));
+//    public Board saveBoard(BoardSaveRequest dto) {
+//        Member author = memberRepository.findById(dto.getAuthorId())
+//                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "Member not found with id: " + dto.getAuthorId()));
+//
+//        Board board = Board.builder()
+//                .title(dto.getTitle())
+//                .content(dto.getContent())
+//                .author()
+//                .build();
+//
+//        return boardRepository.save(board);
+//    }
+    public BoardDetailDTO saveBoard(BoardSaveRequest request) {
+        // TODO: 인증 구현 후 아래 하드코딩된 userId 대신 실제 인증된 사용자의 ID 사용
+        Long userId = 3L; // 하드코딩된 사용자 ID
+        Member author = memberRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "Member not found with id: " + userId));
 
         Board board = Board.builder()
-                .title(dto.getTitle())
-                .content(dto.getContent())
+                .title(request.getTitle())
+                .content(request.getContent())
                 .author(author)
+                .regDate(LocalDateTime.now())
+                .updateDate(LocalDateTime.now())
                 .build();
 
-        return boardRepository.save(board);
+        Board savedBoard = boardRepository.save(board);
+
+        return new BoardDetailDTO(
+                savedBoard.getBoardId(),
+                savedBoard.getTitle(),
+                savedBoard.getContent(),
+                savedBoard.getAuthor().getName(),
+                savedBoard.getRegDate(),
+                savedBoard.getUpdateDate()
+        );
     }
 
     /*수정*/

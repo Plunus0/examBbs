@@ -8,12 +8,14 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class BoardListDTO {
+public class BoardDetailDTO {
     private Long boardId;
     private String title;
+    private String content;
     private String author;
+    private LocalDateTime regDate;
     private LocalDateTime updateDate;
 }

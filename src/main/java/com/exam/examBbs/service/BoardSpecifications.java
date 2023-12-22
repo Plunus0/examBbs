@@ -7,7 +7,6 @@ import org.springframework.data.jpa.domain.Specification;
 public class BoardSpecifications {
 
     public static Specification<Board> titleContains(String title) {
-        System.out.println("title middle, search_text : "+title);
         return (root, query, criteriaBuilder) ->
                 title == null ? criteriaBuilder.isTrue(criteriaBuilder.literal(true)) :
                         criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), "%" + title.trim().toLowerCase() + "%");
@@ -15,7 +14,6 @@ public class BoardSpecifications {
     }
 
     public static Specification<Board> contentContains(String content) {
-        System.out.println("content middle, search_text : "+content);
         return (root, query, criteriaBuilder) ->
                 content == null ? criteriaBuilder.isTrue(criteriaBuilder.literal(true)) :
                         criteriaBuilder.like(criteriaBuilder.lower(root.get("content")), "%" + content.trim().toLowerCase() + "%");

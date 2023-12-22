@@ -5,8 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class BoardInsertRequest {
+public class BoardSaveRequest {
     private String title;
     private String content;
-    private Long authorId;
 }
