@@ -13,9 +13,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name = "member")
 public class Member {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq_gen")
+    @SequenceGenerator(name = "member_seq_gen", sequenceName = "member_seq", allocationSize = 1)
     @Column(name = "member_id")
     private Long memberId;
     private String name;

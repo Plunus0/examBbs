@@ -1,6 +1,5 @@
 package com.exam.examBbs.domain.dto;
 
-import com.exam.examBbs.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ResponseAllBoard<T> {
+public class BoardListDTO {
     private Long boardId;
     private String title;
     private String authorName;

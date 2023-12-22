@@ -8,4 +8,5 @@ import lombok.Getter;
 public class BoardInsertRequest {
     private String title;
     private String content;
+    private Long authorId;
 }

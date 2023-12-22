@@ -1,7 +1,12 @@
 package com.exam.examBbs.controller;
 
+import com.exam.examBbs.domain.dto.MemberJoinRequest;
+import com.exam.examBbs.domain.dto.MemberLoginRequest;
 import com.exam.examBbs.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
-/*
+
 
     @PostMapping("/join")
         public ResponseEntity<String> join(@RequestBody MemberJoinRequest dto){
@@ -22,6 +27,6 @@ public class MemberController {
     @PostMapping("/login")
         public ResponseEntity<String> login(@RequestBody MemberLoginRequest dto) {
             return ResponseEntity.ok().body(memberService.login(dto.getEmail(), dto.getPassword()));
-        }*/
+        }
 
 }

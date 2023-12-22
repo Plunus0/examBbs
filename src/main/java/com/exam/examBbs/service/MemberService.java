@@ -41,7 +41,7 @@ public class MemberService {
         //인증과정
         //이메일 확인
         Member selectedMember = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND, email + "이 없습니다."));
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, email + "이 없습니다."));
         //비밀번호 확인
         if(!encoder.matches(password, selectedMember.getPassword())){
             throw new AppException(ErrorCode.INVALID_PASSWORD, "비밀번호가 틀렸습니다.");
