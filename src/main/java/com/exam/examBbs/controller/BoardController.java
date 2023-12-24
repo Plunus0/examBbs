@@ -43,37 +43,30 @@ public class BoardController {
         return ResponseEntity.ok().body(boardList);
     }
 
-    //전체 조회(반환타입 변경)
-/*    @GetMapping
-    public List<ResponseAllBoard> getAllBoards(*//*@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int pageSize*//*) {
-//        Pageable pageable = PageRequest.of(page, pageSize);
-        //페이징에 필요한 데이터만 전송
-        return boardService.getPaginatedBoard(*//*pageable*//*);
-    }*/
-
-    //게시글 작성
+    //게시글 작성(토큰 검증 주석처리)
     @PostMapping("/write")
-    public ResponseEntity<BoardDetailDTO> saveBoard(@RequestBody BoardSaveRequest dto) {
-        BoardDetailDTO boardDetail = boardService.saveBoard(dto);
+    public ResponseEntity<BoardDetailDTO> saveBoard(@RequestBody BoardSaveRequest dto/*,
+                                                    @RequestHeader("Authorization") String token*/) {
+        BoardDetailDTO boardDetail = boardService.saveBoard(dto/*, token*/);
         return new ResponseEntity<>(boardDetail, HttpStatus.CREATED);
     }
 
-    //상세 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<Board> getBoardById(@PathVariable Long id) {
-        return new ResponseEntity<>(boardService.getBoardById(id), HttpStatus.OK);
+    //게시글 상세조회
+    @GetMapping("/{boardId}")
+    public ResponseEntity<BoardDetailDTO> getBoardById(@PathVariable Long boardId) {
+        return new ResponseEntity<>(boardService.getBoardById(boardId), HttpStatus.OK);
     }
 
-    //업데이트
-    @PutMapping("/{id}")
-    public ResponseEntity<Board> updateBoard(@PathVariable Long id, @RequestBody BoardUpdateRequest dto) {
-        return new ResponseEntity<>(boardService.updateBoard(id, dto), HttpStatus.OK);
+    //게시글 수정
+    @PutMapping("/{boardId}")
+    public ResponseEntity<Board> updateBoard(@PathVariable Long boardId, @RequestBody BoardUpdateRequest dto) {
+        return new ResponseEntity<>(boardService.updateBoard(boardId, dto), HttpStatus.OK);
     }
 
-    //삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
-        boardService.deleteBoard(id);
+    //게시글 삭제
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId) {
+        boardService.deleteBoard(boardId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

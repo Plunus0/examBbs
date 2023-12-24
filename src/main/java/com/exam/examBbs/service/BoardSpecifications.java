@@ -23,10 +23,8 @@ public class BoardSpecifications {
         System.out.println("author middle, search_text : "+authorName);
         return (root, query, criteriaBuilder) -> {
             if (authorName == null) {
-                System.out.println("searchtext is null");
                 return criteriaBuilder.isTrue(criteriaBuilder.literal(true));
             }
-            System.out.println("searchtext is not null");
             return criteriaBuilder.like(criteriaBuilder.lower(root.get("author").get("name")), "%" + authorName.trim().toLowerCase() + "%");
         };
     }

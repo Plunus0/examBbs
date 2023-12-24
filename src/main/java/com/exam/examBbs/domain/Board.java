@@ -31,5 +31,21 @@ public class Board {
     private LocalDateTime regDate;
     @Column(name = "update_date")
     private LocalDateTime updateDate;
+    private String password;
+    @Builder.Default
+    private Long viewCount = 0L; // 조회수
+    private LocalDateTime deactivatedDate; // 비활성화 날짜
+
+    public Board increaseViewCount() {
+        return Board.builder()
+                .boardId(this.boardId)
+                .title(this.title)
+                .content(this.content)
+                .author(this.author)
+                .regDate(this.regDate)
+                .updateDate(this.updateDate)
+                .viewCount(this.viewCount + 1)
+                .build();
+    }
 
 }

@@ -10,6 +10,7 @@ import com.exam.examBbs.exception.AppException;
 import com.exam.examBbs.exception.ErrorCode;
 import com.exam.examBbs.repository.BoardRepository;
 import com.exam.examBbs.repository.MemberRepository;
+import com.exam.examBbs.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,8 +29,6 @@ public class BoardService {
 //    private static final Logger logger = LoggerFactory.getLogger(BoardService.class);
 
     private BoardListDTO convertToBoardListDTO(Board board) {
-        System.out.println("method convertToBoardListDTO");
-
         return BoardListDTO.builder()
                 .boardId(board.getBoardId())
                 .title(board.getTitle())
@@ -53,37 +52,10 @@ public class BoardService {
         return boardRepository.findAll(spec, pageable).map(this::convertToBoardListDTO);
     }
 
+    //생성(토큰 검증 주석처리)
+    public BoardDetailDTO saveBoard(BoardSaveRequest request/*, String token*/) {
 
-
-
-
-
-    /*상세*/
-    public Board getBoardById(Long id) {
-        System.out.println("id parameter = "+id);
-        Optional<Board> board = boardRepository.findById(id);
-        if (board.isPresent()) {
-            return board.get();
-        } else {
-            throw new AppException(ErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.");
-        }
-    }
-
-    //생성
-//    public Board saveBoard(BoardSaveRequest dto) {
-//        Member author = memberRepository.findById(dto.getAuthorId())
-//                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "Member not found with id: " + dto.getAuthorId()));
-//
-//        Board board = Board.builder()
-//                .title(dto.getTitle())
-//                .content(dto.getContent())
-//                .author()
-//                .build();
-//
-//        return boardRepository.save(board);
-//    }
-    public BoardDetailDTO saveBoard(BoardSaveRequest request) {
-        // TODO: 인증 구현 후 아래 하드코딩된 userId 대신 실제 인증된 사용자의 ID 사용
+//        Long userId = JwtUtil.getUserIdFromToken(token, secretKey); // JWT 토큰에서 사용자 ID 추출
         Long userId = 3L; // 하드코딩된 사용자 ID
         Member author = memberRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "Member not found with id: " + userId));
@@ -107,6 +79,28 @@ public class BoardService {
                 savedBoard.getUpdateDate()
         );
     }
+
+    /*상세*/
+    public BoardDetailDTO getBoardById(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
+
+        // 조회수 증가
+        Board updatedBoard = board.increaseViewCount();
+        boardRepository.save(updatedBoard);
+
+        // BoardDetailDTO 반환
+        return new BoardDetailDTO(
+                updatedBoard.getBoardId(),
+                updatedBoard.getTitle(),
+                updatedBoard.getContent(),
+                updatedBoard.getAuthor().getName(),
+                updatedBoard.getRegDate(),
+                updatedBoard.getUpdateDate()
+        );
+    }
+
+
 
     /*수정*/
     public Board updateBoard(Long boardId, BoardUpdateRequest dto) {
