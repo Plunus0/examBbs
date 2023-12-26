@@ -35,11 +35,8 @@ public class BoardController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "searchType", required = false) String searchType,
             @RequestParam(value = "searchText", required = false) String searchText) {
-        System.out.println("controller START");
         Pageable pageable = PageRequest.of(page, size, Sort.by("boardId").descending());
-        System.out.println("controller middle");
         Page<BoardListDTO> boardList = boardService.getBoardList(pageable, searchType, searchText);
-        System.out.println("controller END");
         return ResponseEntity.ok().body(boardList);
     }
 
@@ -59,8 +56,11 @@ public class BoardController {
 
     //게시글 수정
     @PutMapping("/{boardId}")
-    public ResponseEntity<Board> updateBoard(@PathVariable Long boardId, @RequestBody BoardUpdateRequest dto) {
-        return new ResponseEntity<>(boardService.updateBoard(boardId, dto), HttpStatus.OK);
+    public ResponseEntity<BoardDetailDTO> updateBoard(@PathVariable Long boardId,
+                                                      @RequestBody BoardUpdateRequest request/*,
+                                                      @RequestHeader(value = "Authorization", required = false) String token*/) {
+        BoardDetailDTO updatedBoard = boardService.updateBoard(boardId, request/*, token*/);
+        return ResponseEntity.ok(updatedBoard);
     }
 
     //게시글 삭제

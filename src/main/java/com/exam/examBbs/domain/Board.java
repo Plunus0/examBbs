@@ -21,7 +21,6 @@ public class Board {
     @Column(name = "board_id")
     @Id
     private Long boardId;
-
     private String title;
     private String content;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,6 +45,12 @@ public class Board {
                 .updateDate(this.updateDate)
                 .viewCount(this.viewCount + 1)
                 .build();
+    }
+
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
+        this.updateDate = LocalDateTime.now();
     }
 
 }

@@ -24,7 +24,7 @@ public class MemberService {
     public void join(String name, String password, String email){
 
         //email 중복 체크
-        memberRepository.findByEmail(email)
+        memberRepository.findActiveByEmail(email)
                 .ifPresent(member -> {
                     throw new AppException(ErrorCode.EMAIL_DUPLICATED, email+"은 등록된 이메일입니다.");
                 });
@@ -40,7 +40,7 @@ public class MemberService {
     public String login(String email, String password){
         //인증과정
         //이메일 확인
-        Member selectedMember = memberRepository.findByEmail(email)
+        Member selectedMember = memberRepository.findActiveByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, email + "이 없습니다."));
         //비밀번호 확인
         if(!encoder.matches(password, selectedMember.getPassword())){

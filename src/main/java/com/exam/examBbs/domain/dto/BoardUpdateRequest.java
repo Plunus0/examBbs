@@ -8,4 +8,5 @@ import lombok.Getter;
 public class BoardUpdateRequest {
     private String title;
     private String content;
+    private String password;
 }
