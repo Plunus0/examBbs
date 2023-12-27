@@ -7,6 +7,7 @@ import com.exam.examBbs.exception.AppException;
 import com.exam.examBbs.exception.ErrorCode;
 import com.exam.examBbs.repository.BoardRepository;
 import com.exam.examBbs.repository.MemberRepository;
+import com.exam.examBbs.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -26,7 +27,7 @@ public class BoardService {
     private String secretKey;
 
     //임시로 사용하는 memberId 하드코딩
-    private Long memberId = 22L;
+//    private Long memberId = 22L;
 
     //로그확인
 //    private static final Logger logger = LoggerFactory.getLogger(BoardService.class);
@@ -60,24 +61,23 @@ public class BoardService {
     }
 
     //생성(토큰 검증 주석처리)
-    public ResBoardDetail saveBoard(ReqBoardSave dto/*, String token*/) {
+    public ResBoardDetail saveBoard(ReqBoardSave dto, String token) {
         Member author = null;
+        String password = null;
+        Long memberId = null;
 
-        //JWT토큰이 있을 경우 토큰에서 사용자 ID추출
-//        Long memberId = null;
-//        if (token != null && !token.isEmpty()) {
-//            memberId = JwtUtil.getUserIdFromToken(token, secretKey);
-//        }
+        //JWT토큰이 있을 경우 토큰에서 사용자확인
+        if (token != null && !token.isEmpty()) {
+            memberId = JwtUtil.getUserIdFromToken(token, secretKey);
+        }
 
         // JWT에서 추출된 memberId를 확인하고 없다면 비회원임을 확인, memberId가 있으나 매칭되지 않을 경우(위변조, 에러 등) 예외처리
         if (memberId != null) {
             author = memberRepository.findActiveById(memberId)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED, "글을 작성할 수 있는 권한이 없습니다."));
-        }
-        //비회원이면서 비밀번호를 입력하지 않았다면 예외처리, 그렇지 않다면 게시글의 비밀번호로 입력
-        String password = null;
-        if(memberId == null){
-            if(dto.getPassword() == null){
+        }else {
+            //비회원이면서 비밀번호를 입력하지 않았다면 예외처리, 그렇지 않다면 게시글의 비밀번호로 입력
+            if (dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
                 throw new AppException(ErrorCode.INVALID_OPERATION, "비회원은 게시글 작성 비밀번호를 입력해야 합니다.");
             }
             password = dto.getPassword();
@@ -87,8 +87,8 @@ public class BoardService {
         Board board = Board.builder()
                 .title(dto.getTitle())
                 .content(dto.getContent())
-                .author(author) //null이면 비회원
-                .password(password) //회원이면 null
+                .author(author) // 회원인 경우 author에 Member 객체, 비회원인 경우 null
+                .password(password) // 비회원인 경우 password 설정, 회원인 경우 null
                 .regDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
                 .build();
@@ -127,16 +127,16 @@ public class BoardService {
     }
 
     /*수정1(작성자만 수정가능)*/
-    public ResBoardDetail updateBoard(Long boardId, ReqBoardUpdate dto/*, String token*/) {
+    public ResBoardDetail updateBoard(Long boardId, ReqBoardUpdate dto, String token) {
         //boardId를 확인하여 게시글을 가져오거나 없다면 예외처리
         Board board = boardRepository.findActiveById(boardId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
 
         //JWT토큰이 있을 경우 토큰에서 사용자 ID추출
-//        Long memberId = null;
-//        if (token != null && !token.isEmpty()) {
-//            memberId = JwtUtil.getUserIdFromToken(token, secretKey);
-//        }
+        Long memberId = null;
+        if (token != null && !token.isEmpty()) {
+            memberId = JwtUtil.getUserIdFromToken(token, secretKey);
+        }
 
         //JWT에서 추출된 memberId를 확인하고 없다면 비회원임을 확인하고 있다면 작성자인지 확인
         boolean isOwner = false;
@@ -207,7 +207,7 @@ public class BoardService {
     }*/
 
     //게시글 비활성화
-    public void deactivateBoard(Long boardId, ReqBoardDeactivate dto/*, String token*/) {
+    public void deactivateBoard(Long boardId, ReqBoardDeactivate dto, String token) {
         String auth = null;
 
         //boardId를 확인하여 게시글을 가져오거나 없다면 예외처리
@@ -215,10 +215,10 @@ public class BoardService {
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
 
         //JWT토큰이 있을 경우 토큰에서 사용자 ID추출
-//        Long memberId = null;
-//        if (token != null && !token.isEmpty()) {
-//            memberId = JwtUtil.getUserIdFromToken(token, secretKey);
-//        }
+        Long memberId = null;
+        if (token != null && !token.isEmpty()) {
+            memberId = JwtUtil.getUserIdFromToken(token, secretKey);
+        }
 
         // JWT에서 추출된 memberId를 확인하고 없다면 비회원임을 확인, memberId가 있으나 매칭되지 않을 경우(위변조, 에러 등) 예외처리
         if (memberId != null) {

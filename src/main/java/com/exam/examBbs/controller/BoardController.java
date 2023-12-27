@@ -37,9 +37,9 @@ public class BoardController {
 
     //게시글 작성
     @PostMapping("/write")
-    public ResponseEntity<ResBoardDetail> saveBoard(@RequestBody ReqBoardSave dto/*,
-                                                    @RequestHeader("Authorization") String token*/) {
-        ResBoardDetail boardDetail = boardService.saveBoard(dto/*, token*/);
+    public ResponseEntity<ResBoardDetail> saveBoard(@RequestBody ReqBoardSave dto,
+                                                    @RequestHeader(value = "Authorization", required = false) String token) {
+        ResBoardDetail boardDetail = boardService.saveBoard(dto, token);
         return new ResponseEntity<>(boardDetail, HttpStatus.CREATED);
     }
 
@@ -52,18 +52,18 @@ public class BoardController {
     //게시글 수정
     @PutMapping("/{boardId}")
     public ResponseEntity<ResBoardDetail> updateBoard(@PathVariable Long boardId,
-                                                      @RequestBody ReqBoardUpdate dto/*,
-                                                      @RequestHeader(value = "Authorization", required = false) String token*/) {
-        ResBoardDetail updatedBoard = boardService.updateBoard(boardId, dto/*, token*/);
+                                                      @RequestBody ReqBoardUpdate dto,
+                                                      @RequestHeader(value = "Authorization", required = false) String token) {
+        ResBoardDetail updatedBoard = boardService.updateBoard(boardId, dto, token);
         return ResponseEntity.ok(updatedBoard);
     }
 
     //게시글 비활성화
     @PostMapping("/{boardId}")
     public ResponseEntity<String> deactivateBoard(@PathVariable Long boardId,
-                                                  @RequestBody ReqBoardDeactivate dto/*,
-                                                  @RequestHeader("Authorization") String token*/) {
-        boardService.deactivateBoard(boardId, dto/*, token*/);
+                                                  @RequestBody ReqBoardDeactivate dto,
+                                                  @RequestHeader(value = "Authorization", required = false) String token) {
+        boardService.deactivateBoard(boardId, dto, token);
         return ResponseEntity.ok("게시글이 삭제되었습니다.");
     }
 
