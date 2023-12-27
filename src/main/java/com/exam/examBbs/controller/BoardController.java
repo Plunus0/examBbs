@@ -68,7 +68,6 @@ public class BoardController {
     }
 
     //게시글 삭제
-    @DeleteMapping("/{boardId}")
     public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId) {
         boardService.deleteBoard(boardId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
