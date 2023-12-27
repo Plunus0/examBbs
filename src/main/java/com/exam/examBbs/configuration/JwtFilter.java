@@ -34,11 +34,9 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+        //token 꺼내기
         String token = authorization.split(" ")[1];
 
-        //token 꺼내기
-//        String token = getTokenFromRequest(request);
-        logger.info("token = " + token);
 
         //token이 없거나 만료되었는지 확인 후 권한부여 및 Detail을 추가한다.
         if (token != null && !JwtUtil.isExpired(token, secretKey)) {
@@ -65,25 +63,3 @@ public class JwtFilter extends OncePerRequestFilter {
         return null;
     }
 }
-/*        // Token Expired 되었는지 여부
-        if(token != null && JwtUtil.isExpired(token, secretKey)){
-            logger.error("Token Expired");
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        //Token에서 email && id 가져오기
-        Long memberId;
-        String email = "";
-
-        //권한부여
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(email, null, List.of(new SimpleGrantedAuthority("MEMBER")));
-
-        //Detail 추가
-        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        filterChain.doFilter(request, response);*/
-
-
-

@@ -9,10 +9,14 @@ import com.exam.examBbs.repository.BoardRepository;
 import com.exam.examBbs.repository.MemberRepository;
 import com.exam.examBbs.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,7 +34,7 @@ public class BoardService {
 //    private Long memberId = 22L;
 
     //로그확인
-//    private static final Logger logger = LoggerFactory.getLogger(BoardService.class);
+    private static final Logger logger = LoggerFactory.getLogger(BoardService.class);
 
     public Page<ResBoardList> getBoardList(Pageable pageable, String searchType, String searchText) {
         //활성화된 게시글만 검색하는 spec 객체 생성
@@ -66,10 +70,21 @@ public class BoardService {
         String password = null;
         Long memberId = null;
 
-        //JWT토큰이 있을 경우 토큰에서 사용자확인
-        if (token != null && !token.isEmpty()) {
-            memberId = JwtUtil.getUserIdFromToken(token, secretKey);
+        logger.info("authentication1 = nono" );
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        logger.info("authentication2 = " + authentication);
+        if (authentication != null && authentication.isAuthenticated()) {
+            logger.info("memberId1 = " + memberId);
+            memberId = ((Member) authentication.getPrincipal()).getMemberId();
+            logger.info("memberId2 = " + memberId);
         }
+
+        //JWT토큰이 있을 경우 토큰에서 사용자확인
+/*        if (token != null && !token.isEmpty()) {
+            logger.info("token1 = " + token);
+            memberId = JwtUtil.getUserIdFromToken(token, secretKey);
+            logger.info("token2 = " + token);
+        }*/
 
         // JWT에서 추출된 memberId를 확인하고 없다면 비회원임을 확인, memberId가 있으나 매칭되지 않을 경우(위변조, 에러 등) 예외처리
         if (memberId != null) {

@@ -35,7 +35,7 @@ public class BoardController {
         return ResponseEntity.ok().body(boardList);
     }
 
-    //게시글 작성
+    //게시글 작성 토큰을 리퀘스트헤더로 지정하지 않아도 리퀘스트헤더로 토큰을 받는다? 그래선 안됐음
     @PostMapping("/write")
     public ResponseEntity<ResBoardDetail> saveBoard(@RequestBody ReqBoardSave dto,
                                                     @RequestHeader(value = "Authorization", required = false) String token) {
