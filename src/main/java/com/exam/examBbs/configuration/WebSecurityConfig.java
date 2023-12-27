@@ -27,8 +27,8 @@ public class WebSecurityConfig {
                 .cors().and()
                 .authorizeHttpRequests(requests -> {
                     requests.anyRequest().permitAll();
-//                    requests.requestMatchers("/bbs", "/members", "/members/**").permitAll();
-//                    requests.requestMatchers(HttpMethod.POST, "/bbs/**").authenticated();
+//                    requests.requestMatchers("/api/bbs", "/members/login", "/members/join").permitAll();
+//                    requests.requestMatchers("api/bbs/**").authenticated();
                 })
                 .sessionManagement(
                         sessionManagement ->
