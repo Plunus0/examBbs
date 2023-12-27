@@ -10,7 +10,6 @@ import com.exam.examBbs.exception.AppException;
 import com.exam.examBbs.exception.ErrorCode;
 import com.exam.examBbs.repository.BoardRepository;
 import com.exam.examBbs.repository.MemberRepository;
-import com.exam.examBbs.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -19,7 +18,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service

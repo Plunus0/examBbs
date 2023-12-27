@@ -1,15 +1,9 @@
 package com.exam.examBbs.controller;
 
-import com.exam.examBbs.domain.Board;
-import com.exam.examBbs.domain.Member;
 import com.exam.examBbs.domain.dto.BoardDetailDTO;
 import com.exam.examBbs.domain.dto.BoardListDTO;
 import com.exam.examBbs.domain.dto.BoardSaveRequest;
 import com.exam.examBbs.domain.dto.BoardUpdateRequest;
-import com.exam.examBbs.exception.AppException;
-import com.exam.examBbs.exception.ErrorCode;
-import com.exam.examBbs.repository.BoardRepository;
-import com.exam.examBbs.repository.MemberRepository;
 import com.exam.examBbs.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,8 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 
 
 @RestController
@@ -70,5 +62,4 @@ public class BoardController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    //api문서 작성 스웨거설치
 }
