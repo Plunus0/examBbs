@@ -26,7 +26,8 @@ public class Member {
     @Builder.Default
     @Column(name = "reg_date")
     private LocalDateTime regDate = LocalDateTime.now();
-    private LocalDateTime deactivatedDate; // 비활성화 날짜
+    private LocalDateTime deactivatedDate; // 간접 비활성화 날짜
+    private LocalDateTime deprecatedDate; // 직접 비활성화 날짜
     @Builder.Default
     private Boolean isAdmin = false; // 관리자 여부
 }

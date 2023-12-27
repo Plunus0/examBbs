@@ -32,8 +32,9 @@ public class Board {
     private LocalDateTime updateDate;
     private String password;
     @Builder.Default
-    private Long viewCount = 0L; // 조회수
-    private LocalDateTime deactivatedDate; // 비활성화 날짜
+    private Long viewCount = 0L;
+    private LocalDateTime deactivatedDate; // 간접 비활성화 날짜
+    private LocalDateTime deprecatedDate; // 직접 비활성화 날짜
 
     public Board increaseViewCount() {
         return Board.builder()
@@ -51,6 +52,14 @@ public class Board {
         this.title = title;
         this.content = content;
         this.updateDate = LocalDateTime.now();
+    }
+
+    public void deactivate(LocalDateTime dateTime, boolean isByAdmin) {
+        if (isByAdmin) {
+            this.deactivatedDate = dateTime;
+        } else {
+            this.deprecatedDate = dateTime;
+        }
     }
 
 }

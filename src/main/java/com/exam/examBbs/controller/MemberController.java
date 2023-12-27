@@ -28,5 +28,15 @@ public class MemberController {
         public ResponseEntity<String> login(@RequestBody MemberLoginRequest dto) {
             return ResponseEntity.ok().body(memberService.login(dto.getEmail(), dto.getPassword()));
         }
+    //멤버 조회(관리자만)
 
+    //멤버 상세조회(관리자/본인)
+
+    //관리자 지정(관리자)
+
+    //멤버 수정(본인)
+
+    //멤버 비활성화/탈퇴(관리자/본인)
+
+    //멤버 비활성화 해제(관리자)
 }

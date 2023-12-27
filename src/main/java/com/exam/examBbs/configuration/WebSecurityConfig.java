@@ -19,7 +19,7 @@ public class WebSecurityConfig {
     @Value("${jwt.secret}")
     private String secretKey;
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .httpBasic().disable()
                 .csrf().disable()
@@ -35,6 +35,37 @@ public class WebSecurityConfig {
                 )
 //                .addFilterBefore(new JwtFilter(memberService, secretKey), UsernamePasswordAuthenticationFilter.class)
                 .build();
+/*        return httpSecurity
+                .httpBasic().disable()
+                .csrf().disable()
+                .cors().and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .authorizeHttpRequests(requests ->{
+                    requests.requestMatchers("/api/bbs", "/api/bbs/**", "/members/**").permitAll();
+                    requests.requestMatchers(HttpMethod.POST, "/api/bbs/**").authenticated();
+                    requests.requestMatchers(HttpMethod.PUT, "/api/bbs/**").authenticated();
+                    requests.requestMatchers(HttpMethod.DELETE, "/api/bbs/**").authenticated();
+                })
+                .addFilterBefore(new JwtFilter(memberService, secretKey), UsernamePasswordAuthenticationFilter.class)
+                .build();*/
     }
-
 }
+
+        /*        return httpSecurity
+                .httpBasic().disable()
+                .csrf().disable()
+                .cors().and()
+                .authorizeHttpRequests(requests -> {
+                    requests.anyRequest().permitAll();
+//                    requests.requestMatchers("/bbs", "/members", "/members/**").permitAll();
+//                    requests.requestMatchers(HttpMethod.POST, "/bbs/**").authenticated();
+                })
+                .sessionManagement(
+                        sessionManagement ->
+                                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+//                .addFilterBefore(new JwtFilter(memberService, secretKey), UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }*/
+
+

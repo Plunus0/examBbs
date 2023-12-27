@@ -3,9 +3,9 @@ package com.exam.examBbs.domain.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
 @Getter
-public class BoardSaveRequest {
+@AllArgsConstructor
+public class ReqBoardUpdate {
     private String title;
     private String content;
     private String password;
