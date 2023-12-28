@@ -50,7 +50,7 @@ public class BoardController {
     @PutMapping("/{boardId}")
     public ResponseEntity<ResBoardDetail> updateBoard(@PathVariable Long boardId,
                                                       @RequestBody ReqBoardUpdate dto) {
-        //dto로 넘어온 데이터 검증단계, 밀리초 확인하기, db에서 저장된 시간과 https에 노출되는 시간이 다른것(한국시간 확인)
+        //클라이언트에서 넘어온 데이터를 절대 신뢰하지말것. dto로 넘어온 데이터 유효성 검증(어디서?), 밀리초 확인하기, db에서 저장된 시간과 https에 노출되는 시간이 다른것(한국시간 확인)
         ResBoardDetail updatedBoard = boardService.updateBoard(boardId, dto);
         return ResponseEntity.ok(updatedBoard);
     }
