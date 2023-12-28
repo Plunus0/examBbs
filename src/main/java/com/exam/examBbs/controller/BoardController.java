@@ -52,6 +52,7 @@ public class BoardController {
     @PutMapping("/{boardId}")
     public ResponseEntity<ResBoardDetail> updateBoard(@PathVariable Long boardId,
                                                       @RequestBody ReqBoardUpdate dto) {
+        //dto로 넘어온 데이터 검증단계
         ResBoardDetail updatedBoard = boardService.updateBoard(boardId, dto);
         return ResponseEntity.ok(updatedBoard);
     }

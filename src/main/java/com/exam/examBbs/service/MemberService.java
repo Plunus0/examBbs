@@ -6,6 +6,8 @@ import com.exam.examBbs.exception.ErrorCode;
 import com.exam.examBbs.repository.MemberRepository;
 import com.exam.examBbs.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,9 +29,10 @@ public class MemberService implements UserDetailsService{
     private final BCryptPasswordEncoder encoder;
     @Value("${jwt.secret}")
     private String secretKey;
-
     //토큰의 유효시간
     private Long expiredMs = 1000 * 60 * 60L;
+
+    private static final Logger logger = LoggerFactory.getLogger(BoardService.class);
 
     //회원가입 *인증 필요없음 *인증정보 필요없음
     public void join(String name, String password, String email){
@@ -81,9 +84,11 @@ public class MemberService implements UserDetailsService{
         //isadmin 필드가 true인 경우 관리자 권한 부여
         if (Boolean.TRUE.equals(member.getIsAdmin())) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            logger.info("is admin");
         } else {
             //일반 사용자에 대한 권한 설정 (선택적)
             authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+            logger.info("is user");
         }
 
         return authorities;

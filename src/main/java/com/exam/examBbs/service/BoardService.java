@@ -76,7 +76,7 @@ public class BoardService {
         if (authentication != null && authentication.isAuthenticated()) {
             memberId = ((MemberDetails) authentication.getPrincipal()).getMemberId();
         }
-
+        logger.info("memberId = "+memberId);
         // authentication에서에서 추출된 memberId가 없다면 비회원
         if (memberId == null) {
             //비회원이면서 비밀번호를 입력하지 않았다면 예외처리, 그렇지 않다면 게시글의 비밀번호로 입력
@@ -84,18 +84,10 @@ public class BoardService {
                 throw new AppException(ErrorCode.INVALID_OPERATION, "비회원은 게시글 작성 비밀번호를 입력해야 합니다.");
             }
             password = dto.getPassword();
-        }
-
-        /*        if (memberId != null) {
+        }else{
             author = memberRepository.findActiveById(memberId)
-                    .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED, "등록되지 않은 사용자입니다."));
-        }else {
-            //비회원이면서 비밀번호를 입력하지 않았다면 예외처리, 그렇지 않다면 게시글의 비밀번호로 입력
-            if (dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
-                throw new AppException(ErrorCode.INVALID_OPERATION, "비회원은 게시글 작성 비밀번호를 입력해야 합니다.");
-            }
-            password = dto.getPassword();
-        }*/
+                    .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "회원 정보를 찾을 수 없습니다."));
+        }
 
         //입력된 게시글 저장
         Board board = Board.builder()
@@ -306,7 +298,7 @@ public class BoardService {
     //비활성화된 게시글 복구 *인증필요
     public void activateBoard(Long boardId) {
         //boardId를 확인하여 게시글을 가져오거나 없다면 예외처리
-        Board board = boardRepository.findActiveById(boardId)
+        Board board = boardRepository.findDeactiveById(boardId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
 
         //게시글 활성화

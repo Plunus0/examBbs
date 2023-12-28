@@ -2,6 +2,7 @@ package com.exam.examBbs.configuration;
 
 import com.exam.examBbs.service.MemberService;
 import com.exam.examBbs.utils.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -39,10 +40,8 @@ public class JwtFilter extends OncePerRequestFilter {
         //token 꺼내기("Bearer " 접두사 없애기)
         String token = authorization.split(" ")[1];
 
-        //token이 없거나 만료되었는지 확인 후 토큰에 저장되어 있는 정보를 이용하여 권한부여 및 Detail을 추가(memberId, email, 관리자 여부)
-        if (token != null && !JwtUtil.isExpired(token, secretKey)) {
-            try {
-
+        try {
+            if (token != null && !JwtUtil.isExpired(token, secretKey)) {
                 String email = JwtUtil.getEmailFromToken(token, secretKey);
                 UserDetails userDetails = memberService.loadUserByUsername(email);
 
@@ -50,13 +49,17 @@ public class JwtFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            } catch (JwtException e) {
+            } else {
+                // 토큰이 만료된 경우(401 Unauthorized)
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증만료: JWT 인증에 실패했습니다.");
-                return;
             }
+        } catch (ExpiredJwtException e) {
+            // JWT 토큰 만료 예외 처리(401 Unauthorized)
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증만료: JWT 인증에 실패했습니다.");
+        } catch (JwtException e) {
+            // 기타 JWT 관련 예외 처리(403 Forbidden)
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "유효하지 않은 토큰: JWT 인증 실패");
         }
-        filterChain.doFilter(request, response);
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {

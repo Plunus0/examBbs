@@ -22,6 +22,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
+                //이해하기
                 .httpBasic().disable()
                 .csrf().disable()
                 .cors().and()
