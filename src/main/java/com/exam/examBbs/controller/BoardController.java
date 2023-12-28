@@ -37,9 +37,8 @@ public class BoardController {
 
     //게시글 작성 토큰을 리퀘스트헤더로 지정하지 않아도 리퀘스트헤더로 토큰을 받는다? 그래선 안됐음
     @PostMapping("/write")
-    public ResponseEntity<ResBoardDetail> saveBoard(@RequestBody ReqBoardSave dto,
-                                                    @RequestHeader(value = "Authorization", required = false) String token) {
-        ResBoardDetail boardDetail = boardService.saveBoard(dto, token);
+    public ResponseEntity<ResBoardDetail> saveBoard(@RequestBody ReqBoardSave dto) {
+        ResBoardDetail boardDetail = boardService.saveBoard(dto);
         return new ResponseEntity<>(boardDetail, HttpStatus.CREATED);
     }
 
@@ -52,18 +51,16 @@ public class BoardController {
     //게시글 수정
     @PutMapping("/{boardId}")
     public ResponseEntity<ResBoardDetail> updateBoard(@PathVariable Long boardId,
-                                                      @RequestBody ReqBoardUpdate dto,
-                                                      @RequestHeader(value = "Authorization", required = false) String token) {
-        ResBoardDetail updatedBoard = boardService.updateBoard(boardId, dto, token);
+                                                      @RequestBody ReqBoardUpdate dto) {
+        ResBoardDetail updatedBoard = boardService.updateBoard(boardId, dto);
         return ResponseEntity.ok(updatedBoard);
     }
 
     //게시글 비활성화
     @PostMapping("/{boardId}")
     public ResponseEntity<String> deactivateBoard(@PathVariable Long boardId,
-                                                  @RequestBody ReqBoardDeactivate dto,
-                                                  @RequestHeader(value = "Authorization", required = false) String token) {
-        boardService.deactivateBoard(boardId, dto, token);
+                                                  @RequestBody ReqBoardDeactivate dto) {
+        boardService.deactivateBoard(boardId, dto);
         return ResponseEntity.ok("게시글이 삭제되었습니다.");
     }
 
