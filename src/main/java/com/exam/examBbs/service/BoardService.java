@@ -8,10 +8,13 @@ import com.exam.examBbs.exception.ErrorCode;
 import com.exam.examBbs.repository.BoardRepository;
 import com.exam.examBbs.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -31,7 +34,7 @@ public class BoardService {
     Long memberId = null;
     String auth = null;
 
-    //private static final Logger logger = LoggerFactory.getLogger(BoardService.class);
+    private static final Logger logger = LoggerFactory.getLogger(BoardService.class);
 
     //게시글 전체 List조회 (검색 및 페이징처리 포함) *인증 필요없음
     public Page<ResBoardList> getActiveBoardList(Pageable pageable, String searchType, String searchText) {
@@ -66,9 +69,9 @@ public class BoardService {
     public ResBoardDetail saveBoard(ReqBoardSave dto) {
         //authentication객체에 SecurityContextHolder를 담아서 인증정보를 가져온다.
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
+        logger.info("authentication1 : "+authentication);
         //authentication에서 memberId 추출
-        if (authentication != null && authentication.isAuthenticated()) {
+        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
             memberId = ((MemberDetails) authentication.getPrincipal()).getMemberId();
         }
         // authentication에서에서 추출된 memberId가 없다면 비회원
@@ -89,8 +92,8 @@ public class BoardService {
                 .content(dto.getContent())
                 .author(author) // 회원인 경우 author에 Member 객체, 비회원인 경우 null
                 .password(password) // 비회원인 경우 password 설정, 회원인 경우 null
-                .regDate(LocalDateTime.now())
-                .updateDate(LocalDateTime.now())
+                .regDate(LocalDateTime.now().withNano(0))
+                .updateDate(LocalDateTime.now().withNano(0))
                 .build();
         Board savedBoard = boardRepository.save(board);
 
@@ -137,7 +140,7 @@ public class BoardService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         //authentication에서 memberId 추출
-        if (authentication != null && authentication.isAuthenticated()) {
+        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
             memberId = ((MemberDetails) authentication.getPrincipal()).getMemberId();
         }
 
@@ -178,7 +181,7 @@ public class BoardService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         //authentication에서 memberId 추출
-        if (authentication != null && authentication.isAuthenticated()) {
+        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
             memberId = ((MemberDetails) authentication.getPrincipal()).getMemberId();
         }
         // authentication에서 추출된 memberId를 확인하고 없다면 비회원임을 확인, memberId가 있으나 매칭되지 않을 경우(위변조, 에러 등) 예외처리
@@ -195,14 +198,14 @@ public class BoardService {
         //삭제분기
         if (Objects.equals(auth, "author") || Objects.equals(auth, "admin")) {
             //파라미터 isByAdmin이 true일경우 관리자의 게시글 간접 비활성화 그렇지 않다면 게시글 작성자의 직접 비활성화
-            board.deactivate(LocalDateTime.now(), auth.equals("admin"));
+            board.deactivate(LocalDateTime.now().withNano(0), auth.equals("admin"));
         } else {
             //비회원이면서 게시글의 비밀번호가 공란 혹은 틀렸을 경우
             if (dto.getPassword() == null || !dto.getPassword().equals(board.getPassword())) {
                 throw new AppException(ErrorCode.UNAUTHORIZED, "비밀번호 입력 오류입니다.");
             }
             //비회원인 게시글 작성자의 직접 비활성화
-            board.deactivate(LocalDateTime.now(), false);
+            board.deactivate(LocalDateTime.now().withNano(0), false);
         }
 
         boardRepository.save(board);
