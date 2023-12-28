@@ -26,8 +26,8 @@ public class WebSecurityConfig {
                 .csrf().disable()
                 .cors().and()
                 .authorizeHttpRequests(requests -> {
+                    requests.requestMatchers("/api/bbs/deactive", "/api/bbs/deactive/**").hasAuthority("ROLE_ADMIN");
                     requests.anyRequest().permitAll();
-//                    requests.requestMatchers("/api/bbs", "/members/login", "/members/join").permitAll();
 //                    requests.requestMatchers("api/bbs/**").authenticated();
                 })
                 .sessionManagement(

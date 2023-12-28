@@ -25,17 +25,17 @@ public class BoardController {
 
     //게시글 전체 List 조회
     @GetMapping
-    public ResponseEntity<Page<ResBoardList>> getBoards(
+    public ResponseEntity<Page<ResBoardList>> getActiveBoardList(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "searchType", required = false) String searchType,
             @RequestParam(value = "searchText", required = false) String searchText) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("boardId").descending());
-        Page<ResBoardList> boardList = boardService.getBoardList(pageable, searchType, searchText);
+        Page<ResBoardList> boardList = boardService.getActiveBoardList(pageable, searchType, searchText);
         return ResponseEntity.ok().body(boardList);
     }
 
-    //게시글 작성 토큰을 리퀘스트헤더로 지정하지 않아도 리퀘스트헤더로 토큰을 받는다? 그래선 안됐음
+    //게시글 작성
     @PostMapping("/write")
     public ResponseEntity<ResBoardDetail> saveBoard(@RequestBody ReqBoardSave dto) {
         ResBoardDetail boardDetail = boardService.saveBoard(dto);
@@ -44,8 +44,8 @@ public class BoardController {
 
     //게시글 상세조회
     @GetMapping("/{boardId}")
-    public ResponseEntity<ResBoardDetail> getBoardById(@PathVariable Long boardId) {
-        return new ResponseEntity<>(boardService.getBoardById(boardId), HttpStatus.OK);
+    public ResponseEntity<ResBoardDetail> getActiveBoardById(@PathVariable Long boardId) {
+        return new ResponseEntity<>(boardService.getActiveBoardById(boardId), HttpStatus.OK);
     }
 
     //게시글 수정
@@ -71,8 +71,25 @@ public class BoardController {
     }
 
     //간접 비활성화된 게시글 전체 List 조회(관리자만 접근)
-
+    @GetMapping("/deactive")
+    public ResponseEntity<Page<ResBoardList>> getDeactiveBoardList(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "searchType", required = false) String searchType,
+            @RequestParam(value = "searchText", required = false) String searchText) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("boardId").descending());
+        Page<ResBoardList> boardList = boardService.getDeactiveBoardList(pageable, searchType, searchText);
+        return ResponseEntity.ok().body(boardList);
+    }
     //간접 비활성화된 게시글 상세조회(관리자만 접근)
-
-    //간접 비활성화된 게시글 복원하기(관리자만 접근)
+    @GetMapping("/deactive/{boardId}")
+    public ResponseEntity<ResBoardDetail> getDeactiveBoardById(@PathVariable Long boardId) {
+        return new ResponseEntity<>(boardService.getDeactiveBoardById(boardId), HttpStatus.OK);
+    }
+    //간접 비활성화된 게시글 활성화하기(관리자만 접근)
+    @PostMapping("/deactive/{boardId}")
+    public ResponseEntity<String> activateBoard(@PathVariable Long boardId) {
+        boardService.activateBoard(boardId);
+        return ResponseEntity.ok("게시글이 복구되었습니다.");
+    }
 }

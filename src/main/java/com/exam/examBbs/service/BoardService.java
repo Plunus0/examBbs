@@ -38,9 +38,9 @@ public class BoardService {
     //로그확인
     private static final Logger logger = LoggerFactory.getLogger(BoardService.class);
 
-    //게시글 전체 List조회 (검색 및 페이징처리 포함) *인증 필요없음 *인증정보 필요없음
-    public Page<ResBoardList> getBoardList(Pageable pageable, String searchType, String searchText) {
-        //활성화된 게시글만 검색하는 spec 객체 생성
+    //게시글 전체 List조회 (검색 및 페이징처리 포함) *인증 필요없음
+    public Page<ResBoardList> getActiveBoardList(Pageable pageable, String searchType, String searchText) {
+        //활성화된 게시글만 저장하는 spec 객체 생성
         Specification<Board> spec = BoardSpecifications.isActive();
         //if문으로 searchType와 searchText에 따른 검색메서드 실행
         if (searchText != null && !searchText.trim().isEmpty()) {
@@ -67,7 +67,7 @@ public class BoardService {
                 .build();
     }
 
-    //게시글 생성 *authentication객체로 인증정보를 가져와 사용자를 확인하고 이를 memberId에 저장 *인증 필요없음 *인증정보 필요
+    //게시글 생성 *authentication객체로 인증정보를 가져와 사용자를 확인하고 이를 memberId에 저장 *인증 필요없음
     public ResBoardDetail saveBoard(ReqBoardSave dto) {
         //authentication객체에 SecurityContextHolder를 담아서 인증정보를 가져온다.
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -76,12 +76,17 @@ public class BoardService {
         if (authentication != null && authentication.isAuthenticated()) {
             memberId = ((MemberDetails) authentication.getPrincipal()).getMemberId();
         }
-        logger.info("memberId : " + memberId);
 
-        //위 아래를 하나로 합친 로직 구성?
+        // authentication에서에서 추출된 memberId가 없다면 비회원
+        if (memberId == null) {
+            //비회원이면서 비밀번호를 입력하지 않았다면 예외처리, 그렇지 않다면 게시글의 비밀번호로 입력
+            if (dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
+                throw new AppException(ErrorCode.INVALID_OPERATION, "비회원은 게시글 작성 비밀번호를 입력해야 합니다.");
+            }
+            password = dto.getPassword();
+        }
 
-        // authentication에서에서 추출된 memberId를 확인하고 없다면 비회원임을 확인, memberId가 있으나 매칭되지 않을 경우(위변조, 에러 등) 예외처리
-        if (memberId != null) {
+        /*        if (memberId != null) {
             author = memberRepository.findActiveById(memberId)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED, "등록되지 않은 사용자입니다."));
         }else {
@@ -90,7 +95,7 @@ public class BoardService {
                 throw new AppException(ErrorCode.INVALID_OPERATION, "비회원은 게시글 작성 비밀번호를 입력해야 합니다.");
             }
             password = dto.getPassword();
-        }
+        }*/
 
         //입력된 게시글 저장
         Board board = Board.builder()
@@ -114,8 +119,8 @@ public class BoardService {
         );
     }
 
-    //상세 *인증 필요없음 *인증정보 필요없음
-    public ResBoardDetail getBoardById(Long boardId) {
+    //상세 *인증 필요없음
+    public ResBoardDetail getActiveBoardById(Long boardId) {
         //boardId를 확인하여 게시글을 가져오거나 없다면 예외처리
         Board board = boardRepository.findActiveById(boardId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
@@ -135,7 +140,7 @@ public class BoardService {
         );
     }
 
-    //수정1(작성자만 수정가능) *인증 필요없음 *인증정보 필요
+    //수정1(작성자만 수정가능) *인증 필요없음
     public ResBoardDetail updateBoard(Long boardId, ReqBoardUpdate dto) {
 
         //boardId를 확인하여 게시글을 가져오거나 없다면 예외처리
@@ -218,7 +223,7 @@ public class BoardService {
         );
     }*/
 
-    //게시글 비활성화 *인증 필요없음 *인증정보 필요
+    //게시글 비활성화 *인증 필요없음
     public void deactivateBoard(Long boardId, ReqBoardDeactivate dto) {
         //boardId를 확인하여 게시글을 가져오거나 없다면 예외처리
         Board board = boardRepository.findActiveById(boardId)
@@ -231,7 +236,7 @@ public class BoardService {
         if (authentication != null && authentication.isAuthenticated()) {
             memberId = ((MemberDetails) authentication.getPrincipal()).getMemberId();
         }
-        // JWT에서 추출된 memberId를 확인하고 없다면 비회원임을 확인, memberId가 있으나 매칭되지 않을 경우(위변조, 에러 등) 예외처리
+        // authentication에서 추출된 memberId를 확인하고 없다면 비회원임을 확인, memberId가 있으나 매칭되지 않을 경우(위변조, 에러 등) 예외처리
         if (memberId != null) {
             Member member = memberRepository.findActiveById(memberId)
                     .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "글을 삭제할 수 있는 권한이 없습니다."));
@@ -262,4 +267,57 @@ public class BoardService {
     public void deleteBoard(Long boardId) {
         boardRepository.deleteById(boardId);
     }
+
+    //비활성화된 게시글 전체 List조회 (검색 및 페이징처리 포함) *인증 필요
+    public Page<ResBoardList> getDeactiveBoardList(Pageable pageable, String searchType, String searchText) {
+        //활성화된 게시글만 저장하는 spec 객체 생성
+        Specification<Board> spec = BoardSpecifications.isDeactive();
+        //if문으로 searchType와 searchText에 따른 검색메서드 실행
+        if (searchText != null && !searchText.trim().isEmpty()) {
+            if ("title".equals(searchType)) {
+                spec = spec.and(BoardSpecifications.titleContains(searchText));
+            } else if ("content".equals(searchType)) {
+                spec = spec.and(BoardSpecifications.contentContains(searchText));
+            } else if ("author".equals(searchType)) {
+                spec = spec.and(BoardSpecifications.authorNameContains(searchText));
+            }
+        }
+        //검색결과를 convertToBoardListDTO로 Mapping하여 반환
+        return boardRepository.findAll(spec, pageable).map(this::convertToBoardListDTO);
+    }
+
+    //비활성화된 상세 *인증 필요
+    public ResBoardDetail getDeactiveBoardById(Long boardId) {
+        //boardId를 확인하여 게시글을 가져오거나 없다면 예외처리
+        Board board = boardRepository.findDeactiveById(boardId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
+
+        //요청한 게시글 반환
+        return new ResBoardDetail(
+                board.getBoardId(),
+                board.getTitle(),
+                board.getContent(),
+                board.getAuthor().getName(),
+                board.getRegDate(),
+                board.getUpdateDate()
+        );
+    }
+
+    //비활성화된 게시글 복구 *인증필요
+    public void activateBoard(Long boardId) {
+        //boardId를 확인하여 게시글을 가져오거나 없다면 예외처리
+        Board board = boardRepository.findActiveById(boardId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
+
+        //게시글 활성화
+        board.active();
+
+        boardRepository.save(board);
+
+    }
+
+
+
+
+
 }

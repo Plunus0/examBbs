@@ -25,4 +25,9 @@ public class BoardSpecifications {
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.isNull(root.get("deactivatedDate"));
     }
+
+    public static Specification<Board> isDeactive() {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.isNotNull(root.get("deactivatedDate"));
+    }
 }

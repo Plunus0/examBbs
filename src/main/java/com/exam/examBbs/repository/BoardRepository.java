@@ -18,4 +18,12 @@ public interface BoardRepository extends JpaRepository<Board, Long>, JpaSpecific
                 ));
     }
 
+    default Optional<Board> findDeactiveById(Long id) {
+        return findOne((root, query, criteriaBuilder) ->
+                criteriaBuilder.and(
+                        criteriaBuilder.equal(root.get("id"), id),
+                        criteriaBuilder.isNotNull(root.get("deactivatedDate"))
+                ));
+    }
+
 }

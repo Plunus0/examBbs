@@ -35,6 +35,7 @@ public class Board {
     private Long viewCount = 0L;
     private LocalDateTime deactivatedDate; // 간접 비활성화 날짜
     private LocalDateTime deprecatedDate; // 직접 비활성화 날짜
+    //비활성화 해제 누가??
 
     public Board increaseViewCount() {
         return Board.builder()
@@ -60,6 +61,10 @@ public class Board {
         } else {
             this.deprecatedDate = dateTime;
         }
+    }
+
+    public void active(){
+        this.deactivatedDate = null;
     }
 
 }
