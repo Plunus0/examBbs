@@ -1,7 +1,6 @@
 package com.exam.examBbs.controller;
 
 import com.exam.examBbs.domain.dto.*;
-import com.exam.examBbs.repository.MemberRepository;
 import com.exam.examBbs.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/bbs")
 public class BoardController {
     private final BoardService boardService;
-    private final MemberRepository memberRepository;
     @Value("${jwt.secret}")
     private String secretKey;
 

@@ -8,8 +8,6 @@ import com.exam.examBbs.exception.ErrorCode;
 import com.exam.examBbs.repository.BoardRepository;
 import com.exam.examBbs.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,11 +30,8 @@ public class BoardService {
     String password = null;
     Long memberId = null;
     String auth = null;
-    //임시로 사용하는 memberId 하드코딩
-//    private Long memberId = 22L;
 
-    //로그확인
-    private static final Logger logger = LoggerFactory.getLogger(BoardService.class);
+    //private static final Logger logger = LoggerFactory.getLogger(BoardService.class);
 
     //게시글 전체 List조회 (검색 및 페이징처리 포함) *인증 필요없음
     public Page<ResBoardList> getActiveBoardList(Pageable pageable, String searchType, String searchText) {
@@ -76,7 +71,6 @@ public class BoardService {
         if (authentication != null && authentication.isAuthenticated()) {
             memberId = ((MemberDetails) authentication.getPrincipal()).getMemberId();
         }
-        logger.info("memberId = "+memberId);
         // authentication에서에서 추출된 memberId가 없다면 비회원
         if (memberId == null) {
             //비회원이면서 비밀번호를 입력하지 않았다면 예외처리, 그렇지 않다면 게시글의 비밀번호로 입력
@@ -173,47 +167,6 @@ public class BoardService {
                 updatedBoard.getUpdateDate()
         );
     }
-
-    /*수정2(관리자도 수정가능)*/
-/*    public ResBoardDetail updateBoard(Long boardId, ReqBoardUpdate dto, String token) {
-        //boardId를 확인하여 게시글을 가져오거나 없다면 예외처리
-        Board board = boardRepository.findActiveById(boardId)
-        .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
-
-        //JWT토큰이 있을 경우 토큰에서 사용자 ID추출
-        Long memberId = null;
-        if (token != null && !token.isEmpty()) {
-            memberId = JwtUtil.getUserIdFromToken(token, secretKey);
-        }
-
-        //JWT에서 추출된 memberId를 확인하고 없다면 비회원 있다면 작성자 혹은 관리자인지 확인
-        boolean isOwner = false;
-        if (memberId != null) {
-            Member member = memberRepository.findActiveById(memberId)
-                    .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "글을 수정할 수 있는 권한이 없습니다."));
-            isOwner = board.getAuthor() != null && board.getAuthor().getMemberId().equals(memberId) || member.getIsAdmin();
-        }
-
-        //isOwner가 false이면서 입력한 비밀번호가 공란 혹은 틀렸을 경우
-        if (!isOwner) {
-            if (dto.getPassword() == null || !dto.getPassword().equals(board.getPassword())) {
-                throw new AppException(ErrorCode.UNAUTHORIZED, "비밀번호 입력 오류입니다.");
-            }
-        }
-
-        //게시글 수정
-        board.update(dto.getTitle(), dto.getContent());
-        Board updatedBoard = boardRepository.save(board);
-
-        return new ResBoardDetail(
-                updatedBoard.getBoardId(),
-                updatedBoard.getTitle(),
-                updatedBoard.getContent(),
-                updatedBoard.getAuthor() != null ? updatedBoard.getAuthor().getName() : "비회원",
-                updatedBoard.getRegDate(),
-                updatedBoard.getUpdateDate()
-        );
-    }*/
 
     //게시글 비활성화 *인증 필요없음
     public void deactivateBoard(Long boardId, ReqBoardDeactivate dto) {
