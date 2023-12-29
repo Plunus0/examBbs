@@ -4,6 +4,7 @@ import com.exam.examBbs.domain.dto.*;
 import com.exam.examBbs.service.BoardService;
 import com.exam.examBbs.service.FileUploadService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +22,7 @@ import java.util.List;
 
 
 @RestController
+@Validated
 @RequiredArgsConstructor
 @RequestMapping("/api/bbs")
 public class BoardController {
@@ -31,11 +34,13 @@ public class BoardController {
     //게시글 전체 List 조회
     @GetMapping
     public ResponseEntity<Page<ResBoardList>> getActiveBoardList(
-            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "page", defaultValue = "1")
+            @Min(value = 1, message = "최소 페이지는 1페이지 입니다.") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "searchType", required = false) String searchType,
             @RequestParam(value = "searchText", required = false) String searchText) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("boardId").descending());
+        //Pageable은 시작 페이지가 0, 따라서 페이지를 넘김받을때 1이상의 수로 받기 때문에 -1처리를 해서 0페이지 시작으로 맞춤
+        Pageable pageable = PageRequest.of(page-1, size, Sort.by("boardId").descending());
         Page<ResBoardList> boardList = boardService.getActiveBoardList(pageable, searchType, searchText);
         return ResponseEntity.ok().body(boardList);
     }
