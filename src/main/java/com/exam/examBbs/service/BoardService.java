@@ -94,6 +94,7 @@ public class BoardService {
                 .password(password) // 비회원인 경우 password 설정, 회원인 경우 null
                 .regDate(LocalDateTime.now().withNano(0))
                 .updateDate(LocalDateTime.now().withNano(0))
+                .imagePaths(dto.getImagePaths())
                 .build();
         Board savedBoard = boardRepository.save(board);
 
@@ -104,7 +105,8 @@ public class BoardService {
                 savedBoard.getContent(),
                 savedBoard.getAuthor() != null ? savedBoard.getAuthor().getName() : "비회원",
                 savedBoard.getRegDate(),
-                savedBoard.getUpdateDate()
+                savedBoard.getUpdateDate(),
+                savedBoard.getImagePaths()
         );
     }
 
@@ -125,7 +127,8 @@ public class BoardService {
                 updatedBoard.getContent(),
                 updatedBoard.getAuthor().getName(),
                 updatedBoard.getRegDate(),
-                updatedBoard.getUpdateDate()
+                updatedBoard.getUpdateDate(),
+                updatedBoard.getImagePaths()
         );
     }
 
@@ -167,7 +170,8 @@ public class BoardService {
                 updatedBoard.getContent(),
                 updatedBoard.getAuthor() != null ? updatedBoard.getAuthor().getName() : "비회원",
                 updatedBoard.getRegDate(),
-                updatedBoard.getUpdateDate()
+                updatedBoard.getUpdateDate(),
+                updatedBoard.getImagePaths()
         );
     }
 
@@ -247,7 +251,8 @@ public class BoardService {
                 board.getContent(),
                 board.getAuthor().getName(),
                 board.getRegDate(),
-                board.getUpdateDate()
+                board.getUpdateDate(),
+                board.getImagePaths()
         );
     }
 

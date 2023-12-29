@@ -2,6 +2,8 @@ package com.exam.examBbs.controller;
 
 import com.exam.examBbs.domain.dto.*;
 import com.exam.examBbs.service.BoardService;
+import com.exam.examBbs.service.FileUploadService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -11,6 +13,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 
 @RestController
@@ -18,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/bbs")
 public class BoardController {
     private final BoardService boardService;
+    private final FileUploadService fileUploadService;
     @Value("${jwt.secret}")
     private String secretKey;
 
@@ -35,7 +42,7 @@ public class BoardController {
 
     //게시글 작성
     @PostMapping("/write")
-    public ResponseEntity<ResBoardDetail> saveBoard(@RequestBody ReqBoardSave dto) {
+    public ResponseEntity<ResBoardDetail> saveBoard(@Valid @RequestBody ReqBoardSave dto) {
         ResBoardDetail boardDetail = boardService.saveBoard(dto);
         return new ResponseEntity<>(boardDetail, HttpStatus.CREATED);
     }
@@ -49,9 +56,7 @@ public class BoardController {
     //게시글 수정
     @PutMapping("/{boardId}")
     public ResponseEntity<ResBoardDetail> updateBoard(@PathVariable Long boardId,
-                                                      @RequestBody ReqBoardUpdate dto) {
-        //클라이언트에서 넘어온 데이터를 절대 신뢰하지말것
-        //dto로 넘어온 데이터 유효성 검증(어디서?),첨부파일 받아올 수 있는지?, 밀리초 확인하기
+                                                      @Valid @RequestBody ReqBoardUpdate dto) {
         ResBoardDetail updatedBoard = boardService.updateBoard(boardId, dto);
         return ResponseEntity.ok(updatedBoard);
     }
@@ -59,9 +64,20 @@ public class BoardController {
     //게시글 비활성화
     @PostMapping("/{boardId}")
     public ResponseEntity<String> deactivateBoard(@PathVariable Long boardId,
-                                                  @RequestBody ReqBoardDeactivate dto) {
+                                                  @Valid @RequestBody ReqBoardDeactivate dto) {
         boardService.deactivateBoard(boardId, dto);
         return ResponseEntity.ok("게시글이 삭제되었습니다.");
+    }
+
+    //이미지 업로드
+    @PostMapping("/{boardId}/imageUpload")
+    public ResponseEntity<?> uploadFiles(@RequestParam("files") List<MultipartFile> files) throws IOException {
+        if (files.size() > 5) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("파일은 최대 5개까지 업로드할 수 있습니다.");
+        }
+        List<String> filepaths = fileUploadService.uploadFiles(files);
+
+        return ResponseEntity.ok(filepaths);
     }
 
     //게시글 삭제

@@ -1,12 +1,22 @@
 package com.exam.examBbs.domain.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
 public class MemberJoinRequest {
+    @NotEmpty(message = "이름은 필수 입력 값입니다.")
     private String name;
+    @NotEmpty(message = "비밀번호는 필수 입력 값입니다.")
+    @Size(min = 4, message = "비밀번호는 최소 4자이상 이어야합니다.")
+    @Pattern(regexp = ".*[!@#$%^&*()_+].*", message = "비밀번호에는 최소 하나의 특수문자가 포함되어야 합니다.")
     private String password;
+    @NotEmpty(message = "이메일은 필수 입력 값입니다.")
+    @Email(message = "이메일 입력 형식이 바르지 않습니다.")
     private String email;
 }

@@ -3,6 +3,7 @@ package com.exam.examBbs.controller;
 import com.exam.examBbs.domain.dto.MemberJoinRequest;
 import com.exam.examBbs.domain.dto.MemberLoginRequest;
 import com.exam.examBbs.service.MemberService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,13 +20,13 @@ public class MemberController {
 
 
     @PostMapping("/join")
-        public ResponseEntity<String> join(@RequestBody MemberJoinRequest dto){
+        public ResponseEntity<String> join(@Valid @RequestBody MemberJoinRequest dto){
             memberService.join(dto.getName(), dto.getPassword(), dto.getEmail());
             return ResponseEntity.ok().body("회원가입 성공");
         }
 
     @PostMapping("/login")
-        public ResponseEntity<String> login(@RequestBody MemberLoginRequest dto) {
+        public ResponseEntity<String> login(@Valid @RequestBody MemberLoginRequest dto) {
             return ResponseEntity.ok().body(memberService.login(dto.getEmail(), dto.getPassword()));
         }
     //멤버 조회(관리자만)

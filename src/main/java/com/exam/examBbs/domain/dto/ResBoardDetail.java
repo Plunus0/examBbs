@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -18,4 +19,5 @@ public class ResBoardDetail {
     private String author;
     private LocalDateTime regDate;
     private LocalDateTime updateDate;
+    private List<String> imagePaths;
 }

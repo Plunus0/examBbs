@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -35,6 +37,8 @@ public class Board {
     private Long viewCount = 0L;
     private LocalDateTime deactivatedDate; // 간접 비활성화 날짜
     private LocalDateTime deprecatedDate; // 직접 비활성화 날짜
+    @ElementCollection
+    private List<String> imagePaths = new ArrayList<>();
     //비활성화 해제 누가??
 
     public Board increaseViewCount() {
