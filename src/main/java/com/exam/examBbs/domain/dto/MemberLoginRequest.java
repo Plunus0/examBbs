@@ -14,6 +14,6 @@ public class MemberLoginRequest {
     private String email;
 
     @NotEmpty(message = "비밀번호는 필수 입력 값입니다.")
-    @Size(min = 4, message = "비밀번호는 최소 4자이상 이어야합니다.")
+    @Size(min = 3, message = "비밀번호는 최소 3자이상 이어야합니다.")
     private String password;
 }

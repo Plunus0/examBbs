@@ -1,12 +1,13 @@
 package com.exam.examBbs.service;
 
 import com.exam.examBbs.domain.Board;
-import com.exam.examBbs.domain.Member;
+import com.exam.examBbs.domain.MemberLogin;
 import com.exam.examBbs.domain.dto.*;
 import com.exam.examBbs.exception.AppException;
 import com.exam.examBbs.exception.ErrorCode;
 import com.exam.examBbs.repository.BoardRepository;
-import com.exam.examBbs.repository.MemberRepository;
+import com.exam.examBbs.repository.MemberInfoRepository;
+import com.exam.examBbs.repository.MemberLoginRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +27,13 @@ import java.util.Objects;
 @Service
 public class BoardService {
     private final BoardRepository boardRepository;
-    private final MemberRepository memberRepository;
+    private final MemberLoginRepository memberLoginRepository;
+    private final MemberInfoRepository memberInfoRepository;
     @Value("${jwt.secret}")
     private String secretKey;
-    Member author = null;
+    MemberLogin author = null;
     String password = null;
-    Long memberId = null;
+    Long memberId = 1L;
     String auth = null;
 
     private static final Logger logger = LoggerFactory.getLogger(BoardService.class);
@@ -59,7 +61,7 @@ public class BoardService {
         return ResBoardList.builder()
                 .boardId(board.getBoardId())
                 .title(board.getTitle())
-                .authorName(board.getAuthor() != null ? board.getAuthor().getName() : "비회원")
+                .authorName(board.getMemberId() != null ? board.getMemberId().getMemberInfo().getName() : "비회원")
                 .regDate(board.getRegDate())
                 .updateDate(board.getUpdateDate())
                 .build();
@@ -69,7 +71,6 @@ public class BoardService {
     public ResBoardDetail saveBoard(ReqBoardSave dto) {
         //authentication객체에 SecurityContextHolder를 담아서 인증정보를 가져온다.
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        logger.info("authentication1 : "+authentication);
         //authentication에서 memberId 추출
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
             memberId = ((MemberDetails) authentication.getPrincipal()).getMemberId();
@@ -82,28 +83,29 @@ public class BoardService {
             }
             password = dto.getPassword();
         }else{
-            author = memberRepository.findActiveById(memberId)
+            author = memberLoginRepository.findActiveById(memberId)
                     .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "회원 정보를 찾을 수 없습니다."));
         }
-
+        System.out.println("author : " + author.getMemberId());
         //입력된 게시글 저장
         Board board = Board.builder()
                 .title(dto.getTitle())
                 .content(dto.getContent())
-                .author(author) // 회원인 경우 author에 Member 객체, 비회원인 경우 null
+                .memberId(author) // 회원인 경우 author에 MemberLogin 객체, 비회원인 경우 null
                 .password(password) // 비회원인 경우 password 설정, 회원인 경우 null
                 .regDate(LocalDateTime.now().withNano(0))
                 .updateDate(LocalDateTime.now().withNano(0))
                 .imagePaths(dto.getImagePaths())
                 .build();
+        System.out.println("board : " + board);
         Board savedBoard = boardRepository.save(board);
-
+        System.out.println("savedBoard : " + savedBoard);
         //작성한 게시글을 반환
         return new ResBoardDetail(
                 savedBoard.getBoardId(),
                 savedBoard.getTitle(),
                 savedBoard.getContent(),
-                savedBoard.getAuthor() != null ? savedBoard.getAuthor().getName() : "비회원",
+                savedBoard.getMemberId() != null ? savedBoard.getMemberId().getMemberInfo().getName() : "비회원",
                 savedBoard.getRegDate(),
                 savedBoard.getUpdateDate(),
                 savedBoard.getImagePaths()
@@ -125,7 +127,7 @@ public class BoardService {
                 updatedBoard.getBoardId(),
                 updatedBoard.getTitle(),
                 updatedBoard.getContent(),
-                updatedBoard.getAuthor().getName(),
+                updatedBoard.getMemberId().getMemberInfo().getName(),
                 updatedBoard.getRegDate(),
                 updatedBoard.getUpdateDate(),
                 updatedBoard.getImagePaths()
@@ -150,7 +152,7 @@ public class BoardService {
         //JWT에서 추출된 memberId를 확인하고 없다면 비회원임을 확인하고 있다면 작성자인지 확인
         boolean isOwner = false;
         if (memberId != null) {
-            isOwner = board.getAuthor() != null && board.getAuthor().getMemberId().equals(memberId);
+            isOwner = board.getMemberId() != null && board.getMemberId().getMemberId().equals(memberId);
         }
 
         //isOwner가 false이면서 입력한 비밀번호가 공란 혹은 틀렸을 경우
@@ -168,7 +170,7 @@ public class BoardService {
                 updatedBoard.getBoardId(),
                 updatedBoard.getTitle(),
                 updatedBoard.getContent(),
-                updatedBoard.getAuthor() != null ? updatedBoard.getAuthor().getName() : "비회원",
+                updatedBoard.getMemberId() != null ? updatedBoard.getMemberId().getMemberInfo().getName() : "비회원",
                 updatedBoard.getRegDate(),
                 updatedBoard.getUpdateDate(),
                 updatedBoard.getImagePaths()
@@ -190,9 +192,9 @@ public class BoardService {
         }
         // authentication에서 추출된 memberId를 확인하고 없다면 비회원임을 확인, memberId가 있으나 매칭되지 않을 경우(위변조, 에러 등) 예외처리
         if (memberId != null) {
-            Member member = memberRepository.findActiveById(memberId)
+            MemberLogin member = memberLoginRepository.findActiveById(memberId)
                     .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "글을 삭제할 수 있는 권한이 없습니다."));
-            if(board.getAuthor() != null && board.getAuthor().getMemberId().equals(memberId)){
+            if(board.getMemberId() != null && board.getMemberId().getMemberId().equals(memberId)){
                 auth = "author";
             }else if(Boolean.TRUE.equals(member.getIsAdmin())){
                 auth = "admin";
@@ -249,7 +251,7 @@ public class BoardService {
                 board.getBoardId(),
                 board.getTitle(),
                 board.getContent(),
-                board.getAuthor().getName(),
+                board.getMemberId().getMemberInfo().getName(),
                 board.getRegDate(),
                 board.getUpdateDate(),
                 board.getImagePaths()
@@ -266,11 +268,5 @@ public class BoardService {
         board.active();
 
         boardRepository.save(board);
-
     }
-
-
-
-
-
 }

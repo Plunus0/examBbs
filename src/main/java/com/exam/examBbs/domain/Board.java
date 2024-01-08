@@ -25,9 +25,9 @@ public class Board {
     private Long boardId;
     private String title;
     private String content;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author")
-    private Member author;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", referencedColumnName = "memberId")
+    private MemberLogin memberId;
     @Column(name = "reg_date")
     private LocalDateTime regDate;
     @Column(name = "update_date")
@@ -46,7 +46,7 @@ public class Board {
                 .boardId(this.boardId)
                 .title(this.title)
                 .content(this.content)
-                .author(this.author)
+                .memberId(this.memberId)
                 .regDate(this.regDate)
                 .updateDate(this.updateDate)
                 .viewCount(this.viewCount + 1)
